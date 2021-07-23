@@ -1,4 +1,4 @@
 module.exports = {
   transpileDependencies: ["vuetify"],
-  publicPath: "/comtek-test/",
+  publicPath: "/comtek-test/public/index.html",
 };

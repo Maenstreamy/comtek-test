@@ -95,7 +95,6 @@ export default {
       (v) => !!v || "Поле обязательно для заполнения",
       (v) => (v && v.length === 11) || "СНИЛС может состоять только из 11 цифр",
     ],
-    snilsErrorMessage: "",
     select: null,
     gender: ["Мужской", "Женский"],
     success: false,
@@ -114,7 +113,9 @@ export default {
           firstName: this.firstName,
           lastName: this.lastName,
           middleName: this.middleName,
-          birthDate: `${Year}.${this.correctMonth(Month)}.${Day}`,
+          birthDate: `${Year}-${this.correctDate(Month)}-${this.correctDate(
+            Day
+          )}`,
           snils: this.snils,
           gender: this.select,
           id: this.$store.state.pacientList.length + 1,
@@ -124,12 +125,12 @@ export default {
         this.$refs.form.reset();
       }
     },
-    correctMonth(month) {
+    correctDate(date) {
       // Коррестировать дату в двоичный формат
-      if (month < 10) {
-        return ("0" + month).slice(-2);
+      if (date < 10) {
+        return ("0" + date).slice(-2);
       } else {
-        return month;
+        return date;
       }
     },
     reset() {

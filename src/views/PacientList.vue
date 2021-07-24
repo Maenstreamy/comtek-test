@@ -27,30 +27,32 @@
             </v-card-title>
 
             <v-card-text>
-              <v-form>
+              <v-form ref="form" v-model="valid" lazy-validation>
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
                         v-model="editedItem.lastName"
                         label="Фамилия"
+                        :rules="lastNameRules"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
                         v-model="editedItem.firstName"
                         label="Имя"
+                        :rules="firstNameRules"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
                         v-model="editedItem.middleName"
                         label="Отчество"
+                        :rules="middleNameRules"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
-                        class="date-field"
                         type="date"
                         v-model="editedItem.birthDate"
                         label="Дата рождения"
@@ -58,13 +60,16 @@
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
+                        type="number"
                         v-model="editedItem.snils"
                         label="СНИЛС"
+                        maxlength="11"
+                        :rules="snilsRules"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-select
-                        v-model="select"
+                        v-model="editedItem.gender"
                         :items="gender"
                         label="Пол"
                         :rules="[(v) => !!v || 'Укажите пол']"
@@ -77,7 +82,13 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="save">Сохранить</v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="validation"
+                :disabled="!valid"
+                >Сохранить</v-btn
+              >
               <v-btn color="blue darken-1" text @click="close">Отмена</v-btn>
             </v-card-actions>
           </v-card>
@@ -103,7 +114,27 @@
 export default {
   data() {
     return {
-      select: null,
+      valid: true,
+      lastNameRules: [
+        (v) => !!v || "Поле обязательно для заполнения",
+        (v) =>
+          (v && v.length <= 20) || "Максимальная длина строки - 20 символов",
+      ],
+      firstNameRules: [
+        (v) => !!v || "Поле обязательно для заполнения",
+        (v) =>
+          (v && v.length <= 20) || "Максимальная длина строки - 20 символов",
+      ],
+      middleNameRules: [
+        (v) => !!v || "Поле обязательно для заполнения",
+        (v) =>
+          (v && v.length <= 20) || "Максимальная длина строки - 20 символов",
+      ],
+      snilsRules: [
+        (v) => !!v || "Поле обязательно для заполнения",
+        (v) =>
+          (v && v.length === 11) || "СНИЛС может состоять только из 11 цифр",
+      ],
       dialog: false,
       currentId: "",
       editedIndex: -1,
@@ -113,6 +144,7 @@ export default {
         middleName: "",
         birthDate: "",
         snils: "",
+        gender: this.select,
       },
       defaultItem: {
         lastName: "",
@@ -120,8 +152,10 @@ export default {
         middleName: "",
         birthDate: "",
         snils: "",
+        gender: this.select,
       },
       gender: ["Мужской", "Женский"],
+      select: null,
       search: "",
       headers: [
         {
@@ -169,6 +203,12 @@ export default {
       });
     },
 
+    validation() {
+      // Валидация формы
+      if (this.$refs.form.validate()) {
+        this.save();
+      }
+    },
     save() {
       // Сохранение изменений
       if (this.editedIndex > -1) {

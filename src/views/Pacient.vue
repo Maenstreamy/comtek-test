@@ -140,8 +140,9 @@ export default {
 
     deleteItem(item) {
       // Удаление консультаций пациента
-      const index = this.pacientConsultations.indexOf(item);
+      const index = this.$store.state.consultationList.indexOf(item);
       confirm("Удалить консультацию?") &&
+        this.$store.state.consultationList.splice(index, 1) &&
         this.pacientConsultations.splice(index, 1);
     },
 
